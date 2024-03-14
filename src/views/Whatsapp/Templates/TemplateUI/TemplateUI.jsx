@@ -15,10 +15,11 @@ import AllTempTable from './pages/AllTempTable'
 import wp_back from '../imgs/wp_back.png'
 import FrontBaseLoader from '../../../Components/Loader/Loader'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../whatsapp.scss'
 import { postReq } from '../../../../assets/auth/jwtService'
 import SendContactTable from '../../Tables/SendContactTable'
+import { TEMPDATA_DEMO } from '../../TEMPDATA'
 
 
 export default function TemplateUI() {
@@ -106,21 +107,21 @@ export default function TemplateUI() {
          icon: <Activity size={20} />
       },
       {
-         title: "All",
+         title: "All Templates",
          icon: <List size={20} />
-      },
-      {
-         title: "Draft",
-         icon: <Edit size={20} />
-      },
-      {
-         title: "Pending",
-         icon: <Clock size={20} />
-      },
-      {
-         title: "Approved",
-         icon: <Check size={20} />
       }
+      // {
+      //    title: "Draft",
+      //    icon: <Edit size={20} />
+      // },
+      // {
+      //    title: "Pending",
+      //    icon: <Clock size={20} />
+      // },
+      // {
+      //    title: "Approved",
+      //    icon: <Check size={20} />
+      // }
    ]
 
    // get all data
@@ -255,15 +256,15 @@ export default function TemplateUI() {
 
       setLoader(true)
       const formData = new FormData()
-          
-         // if (useButtonLink) {
-         //    formData.append("button_variables", JSON.stringify([
-         //       {
-         //          type:"text",
-         //          text:"XYZ888"
-         //       }
-         //    ]))
-         // }
+
+      // if (useButtonLink) {
+      //    formData.append("button_variables", JSON.stringify([
+      //       {
+      //          type:"text",
+      //          text:"XYZ888"
+      //       }
+      //    ]))
+      // }
 
       if (HeaderParameterList.length > 0) {
          const header_variables = [
@@ -614,7 +615,7 @@ export default function TemplateUI() {
                }
             </div>
             <div className='position-absolute  end-0 me-3 mt-1 d-flex gap-1'>
-               <button className="btn btn-primary" disabled={groups} onClick={() => setGroups(!groups)}>Sent to groups</button>
+               <button className="btn btn-primary" disabled={groups} onClick={() => setGroups(!groups)}>Send to groups</button>
                <button onClick={getData} className='btn btn-primary'>Sync Status</button>
             </div>
          </Card>
@@ -649,7 +650,7 @@ export default function TemplateUI() {
                   <Row className='match-height '>
                      <Card className='border-0'>
                         <CardBody>
-                           {!groups ? <Row className='match-height'>
+                           {!groups ? <Row className='match-height align-items-center '>
 
                               {
                                  AllTemplatesData.length === 0 && <div className='fs-4 text-center mt-5 fw-bolder'>No Templates Available</div>
@@ -658,15 +659,15 @@ export default function TemplateUI() {
                                  AllTemplatesData && AllTemplatesData.map((SingleTemplate) => {
                                     return (
 
-                                       <Col lg="6"  >
+                                       <Col lg="6" className='' >
                                           <Card className="border p-1 rounded-2   position-relaive  shadow-lg " style={{ background: "#fff", gap: "5px", maxWidth: "500px" }} >
                                              {
                                                 renderTemp(SingleTemplate)
                                              }
 
-                                             <div className='mt-auto  '>
-                                                <div className='mt-3  rounded-3 d-flex justify-content-evenly  '>
-                                                   <div className='d-flex justify-content-evenly position-absolute top-0 end-0' style={{ marginTop: "8px", marginRight: "8" }}>
+                                             <div className='mt-  '>
+                                                <div className='mt-2  rounded-3 d-flex justify-content-evenly  '>
+                                                   <div className='d-flex justify-content-evenly position-absolute top-0 end-0 me-1' style={{ marginTop: "8px", marginRight: "8" }}>
 
                                                       {
                                                          SingleTemplate.status === "APPROVED" && <div className=' border-0 px-1 bg-success text-white rounded-2 shadow-lg '>Approved</div>
@@ -680,15 +681,16 @@ export default function TemplateUI() {
                                                    </div>
 
                                                    {/* <button className='btn btn-primary' onClick={() => delTemplate(SingleTemplate.name)} >Delete</button> */}
-                                                   <div class="form-check form-switch">
+                                                   {/* <div class="form-check form-switch">
                                                       <input class="form-check-input" type="checkbox" defaultChecked={true} role="switch" id="flexSwitchCheckDefault" />
                                                       <label class="form-check-label" for="flexSwitchCheckDefault" >Activated</label>
-                                                   </div>
-                                                   <button className='btn text-white' style={{ background: "#006aff" }} onClick={() => getCurrentTemplate(SingleTemplate.id, 'modal2')} >Send to</button>
+                                                   </div> */}
+
 
                                                    <button className='btn btn-primary' onClick={() => nagivate(`/merchant/whatsapp/editTemplate/${SingleTemplate.id}`)} >Edit</button>
                                                    {/* <button className='btn btn-danger' onClick={() => inactiveTemplate(SingleTemplate.id)}>Activate</button> */}
                                                    <button className='btn btn-primary' onClick={() => getCurrentTemplate(SingleTemplate.id, 'modal')}>Test</button>
+                                                   <button className='btn text-white' style={{ background: "#006aff", minWidth: "50%" }} onClick={() => getCurrentTemplate(SingleTemplate.id, 'modal2')} >Send to</button>
                                                 </div>
                                              </div>
 
@@ -708,9 +710,13 @@ export default function TemplateUI() {
                                        useBulkModalScreen === 1 &&
                                        <div>
                                           <h4>Select Groups</h4>
+                                          {
+                                             useGroupList.length === 0 && <h4>No Groups Created! <Link to='/merchant/whatsapp/create-group/' className='text-decoration-underline ' >Create Group</Link></h4>
+                                          }
                                           <Row className='gy-1 mt-2'>
+
                                              {
-                                                useGroupList.map((elm) => {
+                                                useGroupList.length > 0 && useGroupList.map((elm) => {
                                                    if (useSelectedGroups.includes(elm.value)) {
                                                       return (
                                                          <Col md="4" >
@@ -917,10 +923,10 @@ export default function TemplateUI() {
                                                 <div className='p-1'  >
                                                    {/* <h6 className='fs-4 text-black bolder mb-1 '>{data.text}</h6> */}
                                                    {/* <h6 className='fs-4 text-black bolder mb-1 '>{useDisplayHeader}</h6> */}
-                                                  {
-                                                   oldHeaderPara[0] ?  <h6 className='fs-4 text-black bolder mb-1 '>{msgHeader?.replace(/{{(\d+)}}/g, HeaderParameterList_2 === '' ? `[${oldHeaderPara[0] ?? ''}]` : `[${HeaderParameterList_2}]` ?? '') }</h6> : <h6 className='fs-4 text-black bolder mb-1 '>{msgHeader }</h6>
-                                                  }
-                                                   
+                                                   {
+                                                      oldHeaderPara[0] ? <h6 className='fs-4 text-black bolder mb-1 '>{msgHeader?.replace(/{{(\d+)}}/g, HeaderParameterList_2 === '' ? `[${oldHeaderPara[0] ?? ''}]` : `[${HeaderParameterList_2}]` ?? '')}</h6> : <h6 className='fs-4 text-black bolder mb-1 '>{msgHeader}</h6>
+                                                   }
+
                                                    {/* <h6 className='fs-4 text-black bolder mb-1 ' dangerouslySetInnerHTML={{ __html: useDisplayHeader }}></h6> */}
                                                 </div>
                                              )
@@ -1033,6 +1039,9 @@ export default function TemplateUI() {
                            <div>
                               <h4>Select Groups</h4>
                               <Row className='gy-1 mt-2'>
+                                 {
+                                    useGroupList.length === 0 && <h4>No Groups Created! <Link to='/merchant/whatsapp/create-group/' className='text-decoration-underline ' >Create Group</Link></h4>
+                                 }
                                  {/* <h3 className=' border-bottom'>Send to</h3> */}
                                  {
                                     useGroupList.map((elm) => {
@@ -1076,7 +1085,7 @@ export default function TemplateUI() {
                         Cancel
                      </div>
 
-                     {useBulkModalScreen === 1 && <Button color="primary" onClick={() => { setBulkModalScreen(2); tableDataFun(useSelectedGroups) }}>
+                     {useBulkModalScreen === 1 && useGroupList.length !== 0 && <Button color="primary" onClick={() => { setBulkModalScreen(2); tableDataFun(useSelectedGroups) }}>
                         Next
                      </Button>}
                      {useBulkModalScreen === 2 && <Button color="primary" onClick={() => { sendTemplateBulk() }}>

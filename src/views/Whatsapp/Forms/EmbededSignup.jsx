@@ -5,7 +5,7 @@ import { selectPhoneList } from '../../../Helper/data'
 import Select from 'react-select'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { postReq } from '../../../assets/auth/jwtService'
+import { baseURL, postReq } from '../../../assets/auth/jwtService'
 import FrontBaseLoader from '../../Components/Loader/Loader'
 
 
@@ -31,7 +31,7 @@ export default function EmbededSignup() {
   })
 
   useEffect(() => {
-    axios.post("https://api.demo.xircls.in/country-details/").then((resp) => {
+    axios.post(`${baseURL}/country-details/`).then((resp) => {
       console.log(resp)
       setCountry(resp.data.data.countries.map((curElem) => {
         return { value: curElem.id, label: `${curElem.name}` }
@@ -40,10 +40,10 @@ export default function EmbededSignup() {
   }, [])
 
   useEffect(() => {
-    console.log(formData.country)
+    // console.log(formData.country)
     const form_data = new FormData()
     form_data.append('country_id', formData.country.value)
-    axios.post("https://api.demo.xircls.in/state-details/", form_data)
+    axios.post(`${baseURL}/state-details/`, form_data)
       .then((resp) => {
         console.log(resp)
         setState(resp.data.data.states.map((curElem) => {
@@ -62,45 +62,46 @@ export default function EmbededSignup() {
 
   const handleFormSubmit = () => {
     const newformData = new FormData()
-    console.log("sddfasdasd")
+    for (const key in formData) {
+      if (formData[key] === '') {
+        return toast.error("Enter All Fields!")
+      }
+    }
+
+
     Object.entries(formData).map(([key, value]) => {
       if (key === 'country' || key === 'state') {
-        console.log("sfsdfsdf")
         newformData.append(key, value.label)
       } else {
         newformData.append(key, value)
       }
     })
-    
-    // fetch('https://daf4-2402-e280-3d9c-20d-a5e9-6dbd-1388-ddc3.ngrok-free.app/fbSignUp/', {
-    //   method: 'POST',
-    //   body: newformData
-    // })
+
+
     setLoader(true)
     postReq("embeddedSignup", newformData)
       .then((res) => {
         if (res.status === 200) {
           window.location.replace(res.data.embeddedSignupURL)
-          
+
         } else {
           toast.alert("Something went wrong!")
         }
         console.log(res)
       })
       .catch((err) => {
-          console.log(err)
+        console.log(err)
       })
       .finally(() => {
         setLoader(false)
       })
 
-    console.log(newformData)
   }
-  
+
   return (
     <div>
       {
-        useLoader && <FrontBaseLoader/>
+        useLoader && <FrontBaseLoader />
       }
       <style>{`
       .css-13cymwt-control, .css-1hb7zxy-IndicatorsContainer, .css-t3ipsp-control, .css-3iigni-container, .css-16xfy0z-control, .social_input, .input-group-text{

@@ -147,7 +147,7 @@ export default function ProjectTable() {
                     />
                 </CardBody>
             </Card>
-            <Modal size='lg' isOpen={modal} toggle={toggle} >
+            <Modal size='' isOpen={modal} toggle={toggle} >
                 {
                     useLoader && <FrontBaseLoader />
                 }
@@ -156,7 +156,7 @@ export default function ProjectTable() {
                 <form onSubmit={handleCreateProject}>
 
                     <Row className=' py-3'>
-                        <Col lg={8} className='ms-2'>
+                        <Col  className='ms-1'>
                             <h5>Project Name</h5>
                             <Input type="text" name="project_name"  placeholder='Young....'  ></Input>
                         </Col>

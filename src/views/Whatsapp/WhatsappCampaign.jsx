@@ -107,9 +107,9 @@ const WhatsappCampaign = ({ toLoadCampaign, outletData }) => {
                                     ) : (
                                         color === "success" ? CompleteTimelineName[userPermission?.appName] ? <Link to={CompleteTimelineName[userPermission?.appName][curElem.key]}>
                                             {curElem.name}
-                                        </Link> : <a>nomatsrat
+                                        </Link> : <a>
                                             {curElem.name}
-                                        </a> : <Link to={`${timelineName[userPermission?.appName] ? timelineName[userPermission?.appName][curElem.key] : ''}`}>nomatsrat
+                                        </a> : <Link to={`${timelineName[userPermission?.appName] ? timelineName[userPermission?.appName][curElem.key] : ''}`}>
                                             {curElem.name}
                                         </Link>
                                     )

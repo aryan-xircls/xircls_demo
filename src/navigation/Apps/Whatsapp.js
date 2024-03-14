@@ -14,13 +14,13 @@ export const WhatsappNavigation = [
     },
     {
         id: 'message',
-        title: 'Message',
+        title: 'Templates',
         icon: <Circle size={16} />,
         navLink: '/merchant/whatsapp/message/'
     },
     {
         id: 'project',
-        title: 'Project Details',
+        title: 'Projects',
         icon: <Circle size={16} />,
         navLink: '/merchant/whatsapp/is_business/'
     },
@@ -38,7 +38,7 @@ export const WhatsappNavigation = [
     },
     {
         id: 'Groups',
-        title: 'Create Group',
+        title: 'Group',
         icon: <Circle size={16} />,
         navLink: '/merchant/whatsapp/create-group/'
     },
@@ -53,17 +53,17 @@ export const WhatsappNavigation = [
         title: 'Catalogue',
         icon: <Circle size={16} />,
         navLink: '/merchant/whatsapp/Catalogue/'
-    },
+    }
     // {
     //     id: 'businessCreation',
     //     title: 'Business Creation',
     //     icon: <Circle size={16} />,
     //     navLink: '/merchant/whatsapp/business_creation/'
     // },
-    {
-        id: 'optin',
-        title: 'Manage Opt-in',
-        icon: <Circle size={16} />,
-        navLink: '/merchant/whatsapp/optinManage/'
-    }
+    // {
+    //     id: 'optin',
+    //     title: 'Manage Opt-in',
+    //     icon: <Circle size={16} />,
+    //     navLink: '/merchant/whatsapp/optinManage/'
+    // }
 ]

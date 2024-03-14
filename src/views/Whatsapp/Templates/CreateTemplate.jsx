@@ -380,8 +380,11 @@ export default function CreateTemplate() {
 
     postReq("createTemplate", formData)
       .then((res) => {
+        console.log(res.data)
         if (res.data.id) {
           toast.success("Template has been created")
+        } else if (res.data.message) {
+          toast.error(res.data.message)
         } else if (res.data.code === 100) {
           toast.error(res.data.error_user_msg ?? res.data.message)
         } else {

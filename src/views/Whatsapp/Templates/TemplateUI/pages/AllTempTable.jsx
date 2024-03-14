@@ -63,19 +63,19 @@ export default function AllTempTable() {
                 )
             },
             isEnable: true
-        },
-
-        {
-            name: 'Activated',
-            minWidth: '100px',
-            cell: () => (<div className='d-flex gap-1'>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-                    <label class="form-check-label" for="flexSwitchCheckDefault">Activated</label>
-                </div>
-            </div>),
-            isEnable: true
         }
+
+        // {
+        //     name: 'Activated',
+        //     minWidth: '100px',
+        //     cell: () => (<div className='d-flex gap-1'>
+        //         <div class="form-check form-switch">
+        //             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+        //             <label class="form-check-label" for="flexSwitchCheckDefault">Activated</label>
+        //         </div>
+        //     </div>),
+        //     isEnable: true
+        // }
     ]
 
 
