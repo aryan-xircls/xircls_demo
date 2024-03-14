@@ -32,7 +32,6 @@ export default function TemplateUI() {
    const [modal2, setModal2] = useState(false)
    const [CurrentTemplate, setCurrentTemplate] = useState()
    const [HeaderParameterList, setHeaderParameterList] = useState([])
-   const [HeaderParameterList_2, setHeaderParameterList_2] = useState('')
    const [useButtonLink, setButtonLink] = useState(null)
    const [useButtonText, setButtonText] = useState('')
    const [BodyParameterList, setBodyParameterList] = useState([])
@@ -78,7 +77,6 @@ export default function TemplateUI() {
       setSelectedGroups([])
       setBodyParameterList([])
       setHeaderParameterList([])
-      setHeaderParameterList_2('')
       setButtonLink(false)
       // setoldBodyPara([])
       // setoldHeaderPara([])
@@ -214,17 +212,11 @@ export default function TemplateUI() {
          // console.log("data", data)
          // console.log("HeaderParameterList", data2)
          updatedMessage = updatedMessage.replace(/{{(\d+)}}/g, (_, index) => {
-            // if (data2[index - 1] && data2[index - 1] !== undefined) {
-            //    return `[${data2[index - 1]}]`
-            // } else {
-            //    return `[${data[index - 1]}]`
-            // }
-            // if (HeaderParameterList_2 !== '') {
-            //    return `[${HeaderParameterList_2}]`
-            // } else {
-            //    return `[${data[index - 1]}]`
-            // }
-            return HeaderParameterList_2
+            if (data2[index - 1] && data2[index - 1] !== undefined) {
+               return `[${data2[index - 1]}]`
+            } else {
+               return `[${data[index - 1]}]`
+            }
          })
       }
       setDisplayHeader(updatedMessage)
@@ -237,7 +229,6 @@ export default function TemplateUI() {
 
       if (type === 'header') {
          setHeaderParameterList([value])
-         setHeaderParameterList_2(value)
          updateHeaderDisplayedMessageModal(msgHeader, oldHeaderPara)
 
       } else {
@@ -256,14 +247,14 @@ export default function TemplateUI() {
       setLoader(true)
       const formData = new FormData()
           
-         // if (useButtonLink) {
-         //    formData.append("button_variables", JSON.stringify([
-         //       {
-         //          type:"text",
-         //          text:"XYZ888"
-         //       }
-         //    ]))
-         // }
+         if (useButtonLink) {
+            formData.append("button_variables", JSON.stringify([
+               {
+                  type:"text",
+                  text:"XYZ888"
+               }
+            ]))
+         }
 
       if (HeaderParameterList.length > 0) {
          const header_variables = [
@@ -427,9 +418,7 @@ export default function TemplateUI() {
                res.data.components.map((elm) => {
                   if (elm.type === "HEADER" && elm.format === "TEXT") {
                      setMsgHeader(elm.text)
-                     if (elm?.example) {
-                        setoldHeaderPara(elm?.example?.header_text)
-                     }
+                     setoldHeaderPara(elm.example?.header_text)
                      updateHeaderDisplayedMessageModal(elm.text, elm.example?.header_text)
                      // console.log(elm.example?.header_text)
                   }
@@ -438,15 +427,15 @@ export default function TemplateUI() {
                      setoldBodyPara(elm.example?.body_text[0])
                      updateDisplayedMessage2(elm.text, elm.example?.body_text[0])
                   }
-                  // if (elm.type === "BUTTONS") {
-                  //    elm.buttons?.map((btnElm) => {
-                  //       if (btnElm.type === "URL") {
-                  //          if (btnElm?.example) {
-                  //             setButtonLink(true)
-                  //          }
-                  //       }
-                  //    })
-                  // }
+                  if (elm.type === "BUTTONS") {
+                     elm.buttons?.map((btnElm) => {
+                        if (btnElm.type === "URL") {
+                           if (btnElm?.example) {
+                              setButtonLink(true)
+                           }
+                        }
+                     })
+                  }
                })
                if (modal === 'modal') {
                   setModal(true)
@@ -917,11 +906,7 @@ export default function TemplateUI() {
                                                 <div className='p-1'  >
                                                    {/* <h6 className='fs-4 text-black bolder mb-1 '>{data.text}</h6> */}
                                                    {/* <h6 className='fs-4 text-black bolder mb-1 '>{useDisplayHeader}</h6> */}
-                                                  {
-                                                   oldHeaderPara[0] ?  <h6 className='fs-4 text-black bolder mb-1 '>{msgHeader?.replace(/{{(\d+)}}/g, HeaderParameterList_2 === '' ? `[${oldHeaderPara[0] ?? ''}]` : `[${HeaderParameterList_2}]` ?? '') }</h6> : <h6 className='fs-4 text-black bolder mb-1 '>{msgHeader }</h6>
-                                                  }
-                                                   
-                                                   {/* <h6 className='fs-4 text-black bolder mb-1 ' dangerouslySetInnerHTML={{ __html: useDisplayHeader }}></h6> */}
+                                                   <h6 className='fs-4 text-black bolder mb-1 ' dangerouslySetInnerHTML={{ __html: useDisplayHeader }}></h6>
                                                 </div>
                                              )
                                           }
@@ -1026,7 +1011,7 @@ export default function TemplateUI() {
                   <ModalHeader toggle={toggle2} className='border-bottom'>Template Name : {CurrentTemplate?.name && CurrentTemplate.name}</ModalHeader>
                   <ModalBody className='py-2'>
                      <Row className=' justify-content-center  align-items-start'>
-                        {/* send contacts details */}
+                        {/* sned contacts details */}
 
                         {
                            useBulkModalScreen === 1 &&

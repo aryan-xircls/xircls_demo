@@ -13,7 +13,7 @@ import FrontBaseLoader from '../../Components/Loader/Loader'
 
 export default function CreateTemplate() {
   const [useLoader, setLoader] = useState(false)
-  const paramVals = [{ value: 'FirstName', label: "FirstName" }, { value: 'LastName', label: "LastName" }, { value: 'customerName', label: "customerName" }, { value: 'CompanyName', label: "CompanyName" }, { value: 'OrderID', label: "OrderID" }, { value: 'ProductName', label: "ProductName" }]
+  const paramVals = [{ value: 'FirstName', label: "FirstName" }, { value: 'LastName', label: "LastName" }, { value: 'customerName', label: "customerName" }, { value: 'CompanyName', label: "CompanyName" }, { value: 'OrderID', label: "OrderID" }, { value: 'ProductName', label: "ProductName" }, { value: 'Link', label: "Link" }]
   const msgTypeList = [
     {
       value: "Text",
@@ -68,7 +68,6 @@ export default function CreateTemplate() {
   }
 
   useEffect(() => {
-    // alert("sdfsdf")
     if (Header.text.includes("{{1}}")) {
       // Update header parameters
       if (Header_Parameters.length !== 1) {
@@ -80,11 +79,11 @@ export default function CreateTemplate() {
 
   }, [Header.text])
 
+
   // body data structure ---------------------
   const [Body_Parameters, setBody_Parameters] = useState([])
   const [useMsgBody, setMsgBody] = useState("Hello {{3}}, your code will expire in {{4}} mins.")
   const [displayedMessage, setDisplayedMessage] = useState(useMsgBody)
-
   const handleBodyDisplay = (message, parameters) => {
     let uptDisplayMsg = message.replace(/{{\s*(\d+)\s*}}/g, (_, n) => {
       const replacement = parameters[n - 1] // n starts from 1
@@ -129,6 +128,7 @@ export default function CreateTemplate() {
 
 
   const [useInteractive, setInteractive] = useState([])
+  const [useLinkType, setLinkType] = useState("custom")
   const [useButtons, setButtons] = useState({
     QUICK_REPLY: 3,
     URL: 1,
@@ -264,15 +264,7 @@ export default function CreateTemplate() {
   }
 
   const handleTemplateSubmit = () => {
-    // console.log("------------------------------------------------")
-    // console.log("Body_Parameters :   ", Body_Parameters)
-    // console.log("useMsgBody :  ", useMsgBody)
-    // console.log("Header :  ", Header)
-    // console.log("Header_Parameters :  ", Header_Parameters)
-    // console.log("BasicTemplateData :  ", BasicTemplateData)
-    // console.log("useInteractive :  ", useInteractive)
-    // console.log("useButtons :  ", useButtons)
-    // return null
+
     if (!formValidation()) {
       return false
     }
@@ -288,13 +280,18 @@ export default function CreateTemplate() {
           text: item.title,
           phone_number: item.code.replace(/\+/g, '') + item.value
         }
-      } else if (item.type === "URL") {
+      } else if (item.type === "URL" && useLinkType === "custom") {
         return {
           type: item.type,
           text: item.title,
-          url: item.value,
-          // url: "https://www.xircls.com/",
-          example: ["https://www.xircls.com/"]
+          url: item.value
+        }
+      } else if (item.type === "URL" && useLinkType === "Razorpay") {
+        return {
+          type: item.type,
+          text: item.title,
+          url: 'https://rzp.io/i/{{1}}',
+          example: [`https://rzp.io/i/link`]
         }
       } else if (item.type === "QUICK_REPLY") {
         return {
@@ -348,12 +345,10 @@ export default function CreateTemplate() {
         type: 'BODY',
         text: useMsgBody
       },
-
       BasicTemplateData.footer !== '' && {
         type: 'FOOTER',
         text: BasicTemplateData.footer
       },
-
       useInteractive.length !== 0 && {
         type: "BUTTONS",
         buttons: newInteractiveData
@@ -383,9 +378,8 @@ export default function CreateTemplate() {
     }
 
 
-      postReq("createTemplate", formData)
+    postReq("createTemplate", formData)
       .then((res) => {
-        // console.log(res.data)
         if (res.data.id) {
           toast.success("Template has been created")
         } else if (res.data.code === 100) {
@@ -430,7 +424,7 @@ export default function CreateTemplate() {
               <div>
                 <h4 className="">Template Language</h4>
                 <p className="fs-5  text-secondary">You will need to specify the language in which message template is submitted.</p>
-                 <input
+                <input
                   type="text"
                   className="form-control "
                   placeholder='Template Name'
@@ -466,8 +460,6 @@ export default function CreateTemplate() {
                   onChange={(e) => {
                     if (e && e.value !== Header.type.value) {
                       setHeader({ ...Header, type: e.value, file: '' })
-
-                      // setOptOutRespConfig(null)
                     }
                   }}
                 />
@@ -570,8 +562,10 @@ export default function CreateTemplate() {
                   className="form-control "
                   placeholder='Enter Footer text here'
                   maxLength={60}
+                  value={BasicTemplateData.footer}
                   onChange={(e) => setBasicTemplateData({ ...BasicTemplateData, footer: e.target.value })}
                 />
+
               </div>
 
             </Col>
@@ -625,7 +619,10 @@ export default function CreateTemplate() {
                     </div>
                     {/* footer */}
                     {
+                      // Header.type === "Text" && <h6 className='fs-4 text-black bolder mb-1 '>{Header.text.replace(/\{\{1\}\}/g, Header_Parameters[0] === '' ? '{{1}}' : `[${Header_Parameters[0]}]`)}</h6>
+
                       BasicTemplateData.footer && <h6 className='text-secondary mt-1'>{BasicTemplateData.footer}</h6>
+                      // BasicTemplateData.footer && <h6 className='text-secondary mt-1'>{BasicTemplateData.footer.replace(/\{\{1\}\}/g, Footer_Parameters[0] === '' ? '{{1}}' : `[${Footer_Parameters[0]}]`)}</h6>
                     }
                   </CardBody>
                   {
@@ -694,10 +691,11 @@ export default function CreateTemplate() {
                             </Row>)
                         }
                         if (ele.type === 'URL') {
+                          console.log(ele)
                           return (
                             <Row key={index}>
                               <Col lg="2" className='d-flex justify-content-center  align-items-center '><p className='m-0'>Call to Action {index + 1} :</p></Col>
-                              <Col lg="3">
+                              <Col lg="2">
                                 <input
                                   type="text"
                                   className="form-control "
@@ -707,8 +705,12 @@ export default function CreateTemplate() {
                                   disabled
                                 />
                               </Col>
-
-                              <Col lg="3">
+                              <Col lg="2">
+                                <Select defaultValue={[{ label: "custom", value: "custom" }]} options={[{ label: "custom", value: "custom" }, { label: "Razorpay", value: "Razorpay" }]}
+                                  onChange={(e) => setLinkType(e.label)}
+                                />
+                              </Col>
+                              <Col lg="2">
                                 <input
                                   type="text"
                                   className="form-control "
@@ -719,13 +721,25 @@ export default function CreateTemplate() {
                                 />
                               </Col>
                               <Col >
-                                <input
-                                  type="text"
-                                  className="form-control "
-                                  placeholder='Button Value'
-                                  value={ele.value}
-                                  onChange={(e) => handleInputChange(index, 'value', e.target.value)}
-                                />
+                                {
+                                  useLinkType === "custom" && <input
+                                    type="text"
+                                    className="form-control "
+                                    placeholder='Button Value'
+                                    value={ele.value}
+                                    onChange={(e) => handleInputChange(index, 'value', e.target.value)}
+                                  /> }
+                                  {
+                                    useLinkType === "Razorpay" && <input
+                                    type="text"
+                                    className="form-control "
+                                    placeholder='Button Value'
+                                    value="https://rzp.io/i/{{1}}"
+                                    disabled
+                                    // onChange={(e) => handleInputChange(index, 'value', e.target.value)}
+                                    />
+                                  }
+
                               </Col>
 
                               <Col lg="1" className=' d-flex  justify-content-center  align-items-center fs-4'>
@@ -738,7 +752,7 @@ export default function CreateTemplate() {
                           return (
                             <Row key={index}>
                               <Col lg="2" className='d-flex justify-content-center  align-items-center '><p className='m-0'>Call to Action {index + 1} :</p></Col>
-                              <Col lg="3">
+                              <Col lg="2">
                                 <input
                                   type="text"
                                   className="form-control "
@@ -759,6 +773,7 @@ export default function CreateTemplate() {
                                   onChange={(e) => handleInputChange(index, 'title', e.target.value)}
                                 />
                               </Col>
+
                               <Col lg="1">
                                 <Select options={selectPhoneList}
                                   onChange={(e) => handleInputChange(index, 'code', e.value)}

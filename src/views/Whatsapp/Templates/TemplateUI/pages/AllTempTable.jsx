@@ -118,7 +118,7 @@ export default function AllTempTable() {
                     count={total}
                     getData={getData}
                     create={true}
-                    createLink='/'
+                    createLink='/merchant/whatsapp/is_template/'
                     createText='Add Template'
                     isLoading={isLoading}
                     advanceFilter={true}

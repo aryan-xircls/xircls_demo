@@ -17,6 +17,7 @@ export default function EditTemplate() {
 
   const [CurrentTemplate, setCurrentTemplate] = useState()
   const [useLoader, setLoader] = useState(false)
+  const [useLinkType, setLinkType] = useState("custom")
   const paramVals = [{ value: 'FirstName', label: "FirstName" }, { value: 'LastName', label: "LastName" }, { value: 'customerName', label: "customerName" }, { value: 'CompanyName', label: "CompanyName" }, { value: 'OrderID', label: "OrderID" }, { value: 'ProductName', label: "ProductName" }]
   const msgTypeList = [
     {
@@ -345,11 +346,18 @@ export default function EditTemplate() {
           text: item.text,
           phone_number: item.code.replace(/\+/g, '') + item.value
         }
-      } else if (item.type === "URL") {
+      } else if (item.type === "URL" && useLinkType === "custom") {
         return {
           type: item.type,
-          text: item.text,
-          url: item.url
+          text: item.title,
+          url: item.value
+        }
+      } else if (item.type === "URL" && useLinkType === "Razorpay") {
+        return {
+          type: item.type,
+          text: item.title,
+          url: item.value,
+          example: [`${item.value}link`]
         }
       } else if (item.type === "QUICK_REPLY") {
         return {
@@ -771,10 +779,11 @@ export default function EditTemplate() {
                             </Row>)
                         }
                         if (ele.type === 'URL') {
+                          console.log(ele)
                           return (
                             <Row key={index}>
                               <Col lg="2" className='d-flex justify-content-center  align-items-center '><p className='m-0'>Call to Action {index + 1} :</p></Col>
-                              <Col lg="3">
+                              <Col lg="2">
                                 <input
                                   type="text"
                                   className="form-control "
@@ -784,8 +793,12 @@ export default function EditTemplate() {
                                   disabled
                                 />
                               </Col>
-
-                              <Col lg="3">
+                              <Col lg="2">
+                                <Select defaultValue={[{ label: "custom", value: "custom" }]} options={[{ label: "custom", value: "custom" }, { label: "Razorpay", value: "Razorpay" }]}
+                                  onChange={(e) => setLinkType(e.label)}
+                                />
+                              </Col>
+                              <Col lg="2">
                                 <input
                                   type="text"
                                   className="form-control "
@@ -796,13 +809,25 @@ export default function EditTemplate() {
                                 />
                               </Col>
                               <Col >
-                                <input
-                                  type="text"
-                                  className="form-control "
-                                  placeholder='Button Value'
-                                  value={ele.url}
-                                  onChange={(e) => handleInputChange(index, 'url', e.target.value)}
-                                />
+                                {
+                                  useLinkType === "custom" && <input
+                                    type="text"
+                                    className="form-control "
+                                    placeholder='Button Value'
+                                    value={ele.url}
+                                    onChange={(e) => handleInputChange(index, 'url', e.target.value)}
+                                  /> }
+                                  {
+                                    useLinkType === "Razorpay" && <input
+                                    type="text"
+                                    className="form-control "
+                                    placeholder='Button Value'
+                                    value="https://rzp.io/i/{{1}}"
+                                    disabled
+                                    // onChange={(e) => handleInputChange(index, 'value', e.target.value)}
+                                    />
+                                  }
+
                               </Col>
 
                               <Col lg="1" className=' d-flex  justify-content-center  align-items-center fs-4'>
